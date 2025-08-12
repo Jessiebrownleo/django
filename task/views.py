@@ -12,6 +12,11 @@ class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
+    def get_serializer_class(self):
+        if getattr(self, 'action', None) in ('notes', 'note_detail'):
+            return NoteSerializer
+        return super().get_serializer_class()
+
     # GET /task/{id}/notes — list notes for a task
     # POST /task/{id}/notes — create note for a task
     @action(detail=True, methods=['get', 'post'], url_path='notes')

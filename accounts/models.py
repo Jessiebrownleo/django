@@ -17,20 +17,21 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password=None, **extra_fields):
-        # No is_staff/is_active fields anymore
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password=None, **extra_fields):
-        # Ensure superuser flag is set; no is_staff/is_active fields anymore
+        # Ensure superuser flag is set
         extra_fields.setdefault("is_superuser", True)
+
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
+
         return self._create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    # Added for 'login both username and email' support
+    # Optional username to allow login by username in future if desired
     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
 
     first_name = models.CharField(max_length=150, blank=True)
@@ -49,3 +50,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email or self.username or str(self.pk)
+
+    @property
+    def is_active(self):
+        # Always active by default since we removed the DB field.
+        return True
+
+    @property
+    def is_staff(self):
+        # Treat superusers as staff for admin access; others are not staff.
+        return bool(getattr(self, "is_superuser", False))
