@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from faker import Faker
 import random
 
-from task.models import Category, Tag, Task
+from task.models import Category, Tag, Task, Note
 
 class Command(BaseCommand):
     help = 'Seed the database with fake Categories, Tags, and Tasks'
@@ -38,9 +38,17 @@ class Command(BaseCommand):
                 category=random.choice(categories),
                 is_completed=fake.boolean(chance_of_getting_true=30),
                 due_date=fake.date_between(start_date='-30d', end_date='+30d'),
-                status=random.choice(['INIT', 'in_progress', 'CANCEL']),
+                status=random.choice(['INIT', 'in_progress', 'CANCLE']),  # fix choice
             )
             selected_tags = random.sample(tags, k=random.randint(0, 3))
             task.tags.set(selected_tags)
+
+            # Create Notes for each Task
+            notes = [
+                Note(content=fake.paragraph(), task=task)
+                for _n in range(random.randint(0, 3))
+            ]
+            if notes:
+                Note.objects.bulk_create(notes)
 
         self.stdout.write(self.style.SUCCESS('✅ Successfully seeded the database!'))
