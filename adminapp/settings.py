@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-q@w5o49vy6)dk3@h9j@@j6u0^2-%9anfx8i5v#w9q79_+qhf@@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
 
 # Application definition
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt",
+    "djoser",
     "accounts",
     "task",
 ]
@@ -128,7 +130,25 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Custom user model
 AUTH_USER_MODEL = "accounts.User"
 
-# Allow authentication using either username or email
+# DRF and Authentication
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+# Djoser configuration
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "SERIALIZERS": {
+        "user_create_password_retype": "accounts.serializers.UserCreatePasswordRetypeSerializer",
+        "user": "accounts.serializers.UserSerializer",
+        "current_user": "accounts.serializers.UserSerializer",
+    },
+}
+
+# Allow authentication using either username or email for Django's session auth (optional for admin)
 AUTHENTICATION_BACKENDS = [
     "accounts.auth_backends.UsernameOrEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
