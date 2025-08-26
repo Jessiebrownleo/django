@@ -3,7 +3,11 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 
+class Nationality(models.Model):
+    name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -38,7 +42,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=150, blank=True)
     phone = models.CharField(max_length=50, blank=True)
     address = models.CharField(max_length=255, blank=True)
-
+    nationality = models.ForeignKey(
+        'Nationality',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='users'
+    )
     objects = UserManager()
 
     USERNAME_FIELD = "email"

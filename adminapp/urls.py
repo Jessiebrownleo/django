@@ -23,6 +23,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
+
+from accounts.views import AccountUserViewSet
 from task.views import TaskViewSet, TagViewSet, CategoryViewSet
 from djoser.views import UserViewSet
 
@@ -30,7 +32,7 @@ router = DefaultRouter()
 router.register("task", TaskViewSet)
 router.register("tag", TagViewSet)
 router.register("category", CategoryViewSet)
-
+router.register("users",AccountUserViewSet, basename="users")
 urlpatterns = [
     path("admin/", admin.site.urls),
 
